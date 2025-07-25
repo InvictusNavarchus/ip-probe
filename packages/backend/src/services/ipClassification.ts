@@ -136,8 +136,15 @@ export class IPClassificationService {
       return 'private';
     }
 
-    // Check reserved ranges
-    if (this.isInRanges(ipAddress, this.RESERVED_RANGES)) {
+    // Check reserved ranges (but exclude IPv6 ranges for IPv4 addresses)
+    const ipVersion = isIP(ipAddress) as 4 | 6;
+    const relevantReservedRanges = this.RESERVED_RANGES.filter(range => {
+      const isIPv4 = ipVersion === 4;
+      const isRangeIPv4 = !range.cidr.includes(':');
+      return isIPv4 === isRangeIPv4;
+    });
+
+    if (this.isInRanges(ipAddress, relevantReservedRanges)) {
       return 'reserved';
     }
 
@@ -281,8 +288,17 @@ export class IPClassificationService {
    * Find which range an IP belongs to
    */
   static findIPRange(ipAddress: string): IPRange | undefined {
+    const version = isIP(ipAddress) as 4 | 6;
     const allRanges = [...this.PRIVATE_RANGES, ...this.RESERVED_RANGES];
-    return allRanges.find(range => {
+
+    // Filter ranges to match IP version
+    const relevantRanges = allRanges.filter(range => {
+      const isIPv4 = version === 4;
+      const isRangeIPv4 = !range.cidr.includes(':');
+      return isIPv4 === isRangeIPv4;
+    });
+
+    return relevantRanges.find(range => {
       try {
         return ip.cidrSubnet(range.cidr).contains(ipAddress);
       } catch {
