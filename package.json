@@ -1,0 +1,32 @@
+{
+  "name": "ip-probe",
+  "version": "1.0.0",
+  "description": "Privacy-focused network/IP analyzer and identifier",
+  "license": "Unlicensed",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
+    "build": "pnpm --filter backend build && pnpm --filter frontend build",
+    "start": "pnpm --filter backend start",
+    "test": "pnpm --filter backend test && pnpm --filter frontend test",
+    "lint": "pnpm --filter backend lint && pnpm --filter frontend lint",
+    "format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
+    "type-check": "pnpm --filter backend type-check && pnpm --filter frontend type-check"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "prettier": "^3.4.2",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
+    "eslint": "^9.18.0",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20.19.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
