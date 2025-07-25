@@ -3,10 +3,11 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
     "module": "ESNext",
     "moduleResolution": "bundler",
     "outDir": "./dist",
-    "rootDir": "./src",
+
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"],
@@ -16,7 +17,7 @@
       "@/types/*": ["./types/*"],
       "@/utils/*": ["./utils/*"]
     },
-    "types": ["vite/client", "vitest/globals"],
+
     "typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
     "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
@@ -34,12 +35,7 @@
     "**/*.test.tsx",
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "vite.config.ts"
+    ""
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "coverage"
-  ]
+  "exclude": ["node_modules", "dist", "build", "coverage"]
 }

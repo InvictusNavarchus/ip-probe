@@ -1,8 +1,8 @@
-import { Sun, Moon, Monitor } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/utils/cn';
+import { Monitor, Moon, Sun } from 'lucide-react';
 
-export function ThemeToggle(): JSX.Element {
+export function ThemeToggle(): React.JSX.Element {
   const { theme, setTheme } = useTheme();
 
   const themes = [
@@ -27,13 +27,11 @@ export function ThemeToggle(): JSX.Element {
           title={`Switch to ${label.toLowerCase()} theme`}
           aria-label={`Switch to ${label.toLowerCase()} theme`}
         >
-          <Icon 
-            size={16} 
+          <Icon
+            size={16}
             className={cn(
               'transition-colors duration-200',
-              theme === value 
-                ? 'text-brand-600 dark:text-brand-400' 
-                : 'text-slate-600 dark:text-slate-400'
+              theme === value ? 'text-brand-600 dark:text-brand-400' : 'text-slate-600 dark:text-slate-400'
             )}
           />
         </button>

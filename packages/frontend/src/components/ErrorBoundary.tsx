@@ -19,18 +19,16 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.error('Error caught by boundary:', error, errorInfo);
   }
 
-  render(): ReactNode {
+  override render(): ReactNode {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
           <div className="text-center p-8">
-            <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
-              Something went wrong
-            </h1>
+            <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">Something went wrong</h1>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
               {this.state.error?.message || 'An unexpected error occurred'}
             </p>

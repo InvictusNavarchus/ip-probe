@@ -2,11 +2,18 @@ import '@testing-library/jest-dom';
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
+  root = null;
+  rootMargin = '';
+  thresholds = [];
+
   constructor() {}
-  disconnect() {}
-  observe() {}
-  unobserve() {}
-};
+  disconnect(): void {}
+  observe(): void {}
+  unobserve(): void {}
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
+} as unknown as typeof IntersectionObserver;
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
@@ -27,14 +34,14 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: () => {},
     addEventListener: () => {},
     removeEventListener: () => {},
-    dispatchEvent: () => {},
-  }),
+    dispatchEvent: () => {}
+  })
 });
 
 // Mock scrollTo
 Object.defineProperty(window, 'scrollTo', {
   writable: true,
-  value: () => {},
+  value: () => {}
 });
 
 // Mock HTMLCanvasElement.getContext

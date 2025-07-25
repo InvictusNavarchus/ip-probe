@@ -1,16 +1,12 @@
-import { ReactNode } from 'react';
 import { ThemeContext, useThemeState } from '@/hooks/useTheme';
+import { ReactNode } from 'react';
 
 interface ThemeProviderProps {
   children: ReactNode;
 }
 
-export function ThemeProvider({ children }: ThemeProviderProps): JSX.Element {
+export function ThemeProvider({ children }: ThemeProviderProps): React.JSX.Element {
   const themeState = useThemeState();
 
-  return (
-    <ThemeContext value={themeState}>
-      {children}
-    </ThemeContext>
-  );
+  return <ThemeContext value={themeState}>{children}</ThemeContext>;
 }

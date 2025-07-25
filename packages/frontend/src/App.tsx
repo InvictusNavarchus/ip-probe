@@ -1,11 +1,11 @@
-import { Routes, Route } from 'react-router-dom';
 import { Suspense } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { Dashboard } from './components/Dashboard';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ThemeProvider } from './components/ThemeProvider';
-import { Dashboard } from './components/Dashboard';
 
-function App(): JSX.Element {
+function App(): React.JSX.Element {
   return (
     <ErrorBoundary>
       <ThemeProvider>
