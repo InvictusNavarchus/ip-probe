@@ -467,4 +467,173 @@ export class IPAnalysisController {
       });
     }
   });
+
+  /**
+   * Get network fingerprinting analysis
+   */
+  static getNetworkFingerprint = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { ip: targetIP } = req.query;
+    const requestId = req.headers['x-request-id'] as string;
+
+    // Use target IP or detect from request
+    const ipAddress = (targetIP as string) || (await IPDetectionService.analyzeConnection(req)).ip.primaryIP?.address;
+
+    if (!ipAddress) {
+      res.status(400).json({
+        success: false,
+        error: 'No IP address available',
+        message: 'Could not determine IP address for fingerprinting',
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+
+    try {
+      const { FingerprintingService } = await import('@/services/fingerprintingService');
+      const fingerprint = await FingerprintingService.performFingerprinting(req, ipAddress);
+
+      logger.info('Network fingerprinting completed', {
+        requestId,
+        ipAddress,
+        osGuess: fingerprint.overallOsGuess,
+        browserGuess: fingerprint.overallBrowserGuess,
+        deviceType: fingerprint.deviceType
+      });
+
+      res.json({
+        success: true,
+        data: {
+          ipAddress,
+          fingerprint,
+          metadata: {
+            analysisTime: Date.now() - new Date(fingerprint.analysisTimestamp).getTime(),
+            confidence: fingerprint.overallConfidence
+          }
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      logger.error('Network fingerprinting failed', {
+        requestId,
+        ipAddress,
+        error: errorMessage
+      });
+
+      res.status(400).json({
+        success: false,
+        error: 'Network fingerprinting failed',
+        message: errorMessage,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  /**
+   * Get DNS analysis
+   */
+  static getDNSAnalysis = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { ip: targetIP } = req.query;
+    const requestId = req.headers['x-request-id'] as string;
+
+    if (!targetIP || typeof targetIP !== 'string') {
+      res.status(400).json({
+        success: false,
+        error: 'Missing IP parameter',
+        message: 'Please provide a valid IP address in the "ip" query parameter',
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+
+    try {
+      const { DNSAnalysisService } = await import('@/services/dnsAnalysisService');
+      const analysis = await DNSAnalysisService.analyzeDNS(targetIP);
+
+      logger.info('DNS analysis completed', {
+        requestId,
+        targetIP,
+        hostname: analysis.reverseDNS?.hostname,
+        responseTime: analysis.responseTime,
+        riskScore: analysis.reputation.riskScore
+      });
+
+      res.json({
+        success: true,
+        data: analysis,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      logger.error('DNS analysis failed', {
+        requestId,
+        targetIP,
+        error: errorMessage
+      });
+
+      res.status(400).json({
+        success: false,
+        error: 'DNS analysis failed',
+        message: errorMessage,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  /**
+   * Get comprehensive security assessment
+   */
+  static getSecurityAssessment = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { ip: targetIP } = req.query;
+    const requestId = req.headers['x-request-id'] as string;
+
+    // Use target IP or detect from request
+    const ipAddress = (targetIP as string) || (await IPDetectionService.analyzeConnection(req)).ip.primaryIP?.address;
+
+    if (!ipAddress) {
+      res.status(400).json({
+        success: false,
+        error: 'No IP address available',
+        message: 'Could not determine IP address for security assessment',
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+
+    try {
+      const { SecurityAssessmentService } = await import('@/services/securityAssessmentService');
+      const assessment = await SecurityAssessmentService.performSecurityAssessment(req, ipAddress);
+
+      logger.info('Security assessment completed', {
+        requestId,
+        ipAddress,
+        overallRiskScore: assessment.overallRiskScore,
+        riskLevel: assessment.riskLevel,
+        threatTypes: assessment.threatIntelligence.threatTypes
+      });
+
+      res.json({
+        success: true,
+        data: assessment,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      logger.error('Security assessment failed', {
+        requestId,
+        ipAddress,
+        error: errorMessage
+      });
+
+      res.status(400).json({
+        success: false,
+        error: 'Security assessment failed',
+        message: errorMessage,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
 }
