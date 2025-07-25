@@ -15,9 +15,21 @@ export class IPAnalysisController {
       // Perform connection analysis
       const analysis = await IPDetectionService.analyzeConnection(req);
 
-      // Add classification details for primary IP
+      // Add comprehensive analysis for primary IP
       if (analysis.ip.primaryIP) {
         const ipDetails = IPClassificationService.getIPDetails(analysis.ip.primaryIP.address);
+
+        // Get geolocation and network info
+        const { GeolocationService } = await import('@/services/geolocationService');
+        const { geolocation, network, security } = await GeolocationService.getComprehensiveAnalysis(
+          analysis.ip.primaryIP.address
+        );
+
+        // Add to analysis
+        if (geolocation) analysis.ip.geolocation = geolocation;
+        if (network) analysis.ip.network = network;
+        if (security) analysis.ip.security = security;
+
         analysis.ip.technical = {
           ...(ipDetails.subnet && { subnet: ipDetails.subnet }),
           ...(ipDetails.cidr && { cidr: ipDetails.cidr })
@@ -346,6 +358,110 @@ export class IPAnalysisController {
       res.status(400).json({
         success: false,
         error: 'IP classification failed',
+        message: errorMessage,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  /**
+   * Get comprehensive network analysis for a specific IP
+   */
+  static getNetworkAnalysis = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { ip: targetIP } = req.query;
+    const requestId = req.headers['x-request-id'] as string;
+
+    if (!targetIP || typeof targetIP !== 'string') {
+      res.status(400).json({
+        success: false,
+        error: 'Missing IP parameter',
+        message: 'Please provide a valid IP address in the "ip" query parameter',
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+
+    try {
+      const { NetworkAnalysisService } = await import('@/services/networkAnalysisService');
+      const analysis = await NetworkAnalysisService.analyzeNetwork(targetIP);
+
+      logger.info('Network analysis completed', {
+        requestId,
+        targetIP,
+        analysisTime: analysis.metadata.analysisTime,
+        confidence: analysis.metadata.confidence
+      });
+
+      res.json({
+        success: true,
+        data: analysis,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      logger.error('Network analysis failed', {
+        requestId,
+        targetIP,
+        error: errorMessage
+      });
+
+      res.status(400).json({
+        success: false,
+        error: 'Network analysis failed',
+        message: errorMessage,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  /**
+   * Compare two IP addresses
+   */
+  static compareIPs = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { ip1, ip2 } = req.query;
+    const requestId = req.headers['x-request-id'] as string;
+
+    if (!ip1 || typeof ip1 !== 'string' || !ip2 || typeof ip2 !== 'string') {
+      res.status(400).json({
+        success: false,
+        error: 'Missing IP parameters',
+        message: 'Please provide both ip1 and ip2 query parameters',
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+
+    try {
+      const { NetworkAnalysisService } = await import('@/services/networkAnalysisService');
+      const comparison = await NetworkAnalysisService.compareIPs(ip1, ip2);
+
+      logger.info('IP comparison completed', {
+        requestId,
+        ip1,
+        ip2,
+        sameCountry: comparison.comparison.sameCountry,
+        distanceKm: comparison.comparison.distanceKm
+      });
+
+      res.json({
+        success: true,
+        data: comparison,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      logger.error('IP comparison failed', {
+        requestId,
+        ip1,
+        ip2,
+        error: errorMessage
+      });
+
+      res.status(400).json({
+        success: false,
+        error: 'IP comparison failed',
         message: errorMessage,
         timestamp: new Date().toISOString()
       });

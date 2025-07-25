@@ -107,6 +107,6 @@ export interface SecurityInfo {
   isThreat: boolean;
   threatTypes: string[];
   riskScore: number;
+  reputation: 'good' | 'neutral' | 'suspicious' | 'malicious';
   lastSeen?: string;
-  reputation?: 'good' | 'neutral' | 'suspicious' | 'malicious';
 }

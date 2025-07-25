@@ -18,4 +18,10 @@ router.get('/subnet', IPAnalysisController.calculateSubnet);
 // Get IP classification
 router.get('/classify', IPAnalysisController.getIPClassification);
 
+// Get comprehensive network analysis
+router.get('/network', IPAnalysisController.getNetworkAnalysis);
+
+// Compare two IP addresses
+router.get('/compare', IPAnalysisController.compareIPs);
+
 export { router as ipAnalysisRoutes };
