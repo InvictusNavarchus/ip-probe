@@ -1,3 +1,8 @@
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
+
 import { errorHandler } from '@/middleware/errorHandler';
 import { requestLogger } from '@/middleware/requestLogger';
 import { apiRoutes } from '@/routes/api';
@@ -12,6 +17,7 @@ import { createServer } from 'http';
 const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT ?? 3001;
+const HOST = process.env.HOST ?? 'localhost';
 const NODE_ENV = process.env.NODE_ENV ?? 'development';
 
 // Security middleware
@@ -40,12 +46,15 @@ app.use(
 );
 
 // CORS configuration
+const corsOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
+  : NODE_ENV === 'production'
+    ? ['https://your-domain.com'] // Replace with actual domain
+    : ['http://localhost:3000', 'http://127.0.0.1:3000'];
+
 app.use(
   cors({
-    origin:
-      NODE_ENV === 'production'
-        ? ['https://your-domain.com'] // Replace with actual domain
-        : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: corsOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -53,9 +62,15 @@ app.use(
 );
 
 // Rate limiting
+const rateLimitMax = process.env.RATE_LIMIT_MAX
+  ? parseInt(process.env.RATE_LIMIT_MAX, 10)
+  : NODE_ENV === 'production'
+    ? 100
+    : 1000;
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: NODE_ENV === 'production' ? 100 : 1000, // Limit each IP
+  max: rateLimitMax, // Limit each IP
   message: {
     error: 'Too many requests from this IP, please try again later.',
     retryAfter: '15 minutes'
@@ -145,10 +160,10 @@ process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Start server
-server.listen(PORT, () => {
-  logger.info(`🚀 Server running on port ${PORT} in ${NODE_ENV} mode`);
-  logger.info(`📊 Health check available at http://localhost:${PORT}/health`);
-  logger.info(`🔗 API endpoints available at http://localhost:${PORT}/api`);
+server.listen(PORT, HOST, () => {
+  logger.info(`🚀 Server running on http://${HOST}:${PORT} in ${NODE_ENV} mode`);
+  logger.info(`📊 Health check available at http://${HOST}:${PORT}/health`);
+  logger.info(`🔗 API endpoints available at http://${HOST}:${PORT}/api`);
 });
 
 // Handle unhandled promise rejections
