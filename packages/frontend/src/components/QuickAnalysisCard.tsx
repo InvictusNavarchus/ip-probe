@@ -1,24 +1,24 @@
+import { AlertCircle, Search, Zap } from 'lucide-react';
 import { useState } from 'react';
-import { Search, Zap, AlertCircle } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
-import { Button } from './ui/Button';
-import { Badge } from './ui/Badge';
-import { LoadingSpinner } from './LoadingSpinner';
 import { useAnalyzeIP } from '../hooks/useIPAnalysis';
+import { LoadingSpinner } from './LoadingSpinner';
+import { Badge } from './ui/Badge';
+import { Button } from './ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 
 interface QuickAnalysisCardProps {
-  className?: string;
+  className?: string | undefined;
 }
 
 export function QuickAnalysisCard({ className }: QuickAnalysisCardProps) {
   const [ipAddress, setIpAddress] = useState('');
   const [lastAnalyzedIP, setLastAnalyzedIP] = useState<string | null>(null);
-  
+
   const analyzeIPMutation = useAnalyzeIP();
 
   const handleAnalyze = async () => {
     if (!ipAddress.trim()) return;
-    
+
     try {
       await analyzeIPMutation.mutateAsync(ipAddress.trim());
       setLastAnalyzedIP(ipAddress.trim());
@@ -50,7 +50,7 @@ export function QuickAnalysisCard({ className }: QuickAnalysisCardProps) {
           Quick IP Analysis
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent>
         <div className="space-y-4">
           {/* Input Section */}
@@ -64,13 +64,14 @@ export function QuickAnalysisCard({ className }: QuickAnalysisCardProps) {
                   id="ip-input"
                   type="text"
                   value={ipAddress}
-                  onChange={(e) => setIpAddress(e.target.value)}
+                  onChange={e => setIpAddress(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="e.g., 8.8.8.8 or 2001:4860:4860::8888"
                   className={`w-full px-3 py-2 border rounded-md font-mono text-sm transition-colors
-                    ${inputValid 
-                      ? 'border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-blue-500' 
-                      : 'border-red-300 dark:border-red-600 focus:border-red-500 focus:ring-red-500'
+                    ${
+                      inputValid
+                        ? 'border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-blue-500'
+                        : 'border-red-300 dark:border-red-600 focus:border-red-500 focus:ring-red-500'
                     }
                     bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
                     focus:outline-none focus:ring-2 focus:ring-opacity-50`}
@@ -82,7 +83,7 @@ export function QuickAnalysisCard({ className }: QuickAnalysisCardProps) {
                   </div>
                 )}
               </div>
-              
+
               <Button
                 onClick={handleAnalyze}
                 disabled={!ipAddress.trim() || !inputValid || analyzeIPMutation.isPending}
@@ -98,7 +99,7 @@ export function QuickAnalysisCard({ className }: QuickAnalysisCardProps) {
           <div>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">Quick examples:</p>
             <div className="flex flex-wrap gap-2">
-              {['8.8.8.8', '1.1.1.1', '208.67.222.222'].map((exampleIP) => (
+              {['8.8.8.8', '1.1.1.1', '208.67.222.222'].map(exampleIP => (
                 <button
                   key={exampleIP}
                   onClick={() => setIpAddress(exampleIP)}
@@ -116,12 +117,8 @@ export function QuickAnalysisCard({ className }: QuickAnalysisCardProps) {
               <div className="flex items-center">
                 <LoadingSpinner size="sm" className="mr-3" />
                 <div>
-                  <p className="font-medium text-blue-900 dark:text-blue-100">
-                    Analyzing {ipAddress}
-                  </p>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
-                    Please wait while we gather information...
-                  </p>
+                  <p className="font-medium text-blue-900 dark:text-blue-100">Analyzing {ipAddress}</p>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">Please wait while we gather information...</p>
                 </div>
               </div>
             </div>
@@ -132,9 +129,7 @@ export function QuickAnalysisCard({ className }: QuickAnalysisCardProps) {
               <div className="flex items-center">
                 <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mr-3" />
                 <div>
-                  <p className="font-medium text-red-900 dark:text-red-100">
-                    Analysis Failed
-                  </p>
+                  <p className="font-medium text-red-900 dark:text-red-100">Analysis Failed</p>
                   <p className="text-sm text-red-700 dark:text-red-300">
                     {analyzeIPMutation.error?.message || 'Unable to analyze the IP address'}
                   </p>
@@ -147,20 +142,16 @@ export function QuickAnalysisCard({ className }: QuickAnalysisCardProps) {
             <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="font-medium text-green-900 dark:text-green-100">
-                    Analysis Complete
-                  </p>
+                  <p className="font-medium text-green-900 dark:text-green-100">Analysis Complete</p>
                   <Badge variant="success">Success</Badge>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div>
                     <span className="text-sm text-green-700 dark:text-green-300">IP Address: </span>
-                    <span className="font-mono font-semibold text-green-900 dark:text-green-100">
-                      {lastAnalyzedIP}
-                    </span>
+                    <span className="font-mono font-semibold text-green-900 dark:text-green-100">{lastAnalyzedIP}</span>
                   </div>
-                  
+
                   {analyzeIPMutation.data.ip.primaryIP && (
                     <>
                       <div>
@@ -169,7 +160,7 @@ export function QuickAnalysisCard({ className }: QuickAnalysisCardProps) {
                           IPv{analyzeIPMutation.data.ip.primaryIP.version} {analyzeIPMutation.data.ip.primaryIP.type}
                         </Badge>
                       </div>
-                      
+
                       {analyzeIPMutation.data.ip.technical?.subnet && (
                         <div>
                           <span className="text-sm text-green-700 dark:text-green-300">Subnet: </span>
@@ -181,7 +172,7 @@ export function QuickAnalysisCard({ className }: QuickAnalysisCardProps) {
                     </>
                   )}
                 </div>
-                
+
                 <p className="text-xs text-green-600 dark:text-green-400">
                   💡 Check the main dashboard for detailed analysis results
                 </p>

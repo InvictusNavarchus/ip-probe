@@ -34,8 +34,7 @@
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.spec.ts",
-    "**/*.spec.tsx",
-    ""
+    "**/*.spec.tsx"
   ],
   "exclude": ["node_modules", "dist", "build", "coverage"]
 }

@@ -1,15 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { IPProbeAPI } from '../services/api';
-import type {
-  IPAnalysis,
-  DetailedIPAnalysis,
-  DNSAnalysis,
-  NetworkFingerprint,
-  SecurityAssessment,
-  SubnetInfo,
-  IPComparison,
-  APIError
-} from '../types/api';
+import type { APIError } from '../types/api';
 
 // Query Keys
 export const queryKeys = {
@@ -22,7 +13,7 @@ export const queryKeys = {
   ipComparison: (ip1: string, ip2: string) => ['ip', 'compare', ip1, ip2] as const,
   networkFingerprint: ['ip', 'fingerprint'] as const,
   dnsAnalysis: (ip: string) => ['ip', 'dns', ip] as const,
-  securityAssessment: (ip: string) => ['ip', 'security', ip] as const,
+  securityAssessment: (ip: string) => ['ip', 'security', ip] as const
 } as const;
 
 // Hook for current IP analysis
@@ -33,7 +24,7 @@ export function useCurrentIP() {
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
     retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000)
   });
 }
 
@@ -45,7 +36,7 @@ export function useDetailedAnalysis() {
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000)
   });
 }
 
@@ -57,7 +48,7 @@ export function useSpecificIP(ipAddress: string, enabled = true) {
     enabled: enabled && !!ipAddress,
     staleTime: 10 * 60 * 1000, // 10 minutes for specific IPs
     gcTime: 30 * 60 * 1000, // 30 minutes
-    retry: 2,
+    retry: 2
   });
 }
 
@@ -69,7 +60,7 @@ export function useIPClassification(ipAddress: string, enabled = true) {
     enabled: enabled && !!ipAddress,
     staleTime: 15 * 60 * 1000, // 15 minutes
     gcTime: 60 * 60 * 1000, // 1 hour
-    retry: 2,
+    retry: 2
   });
 }
 
@@ -81,7 +72,7 @@ export function useSubnetCalculation(ipAddress: string, subnetMask: string, enab
     enabled: enabled && !!ipAddress && !!subnetMask,
     staleTime: 30 * 60 * 1000, // 30 minutes
     gcTime: 60 * 60 * 1000, // 1 hour
-    retry: 1,
+    retry: 1
   });
 }
 
@@ -93,7 +84,7 @@ export function useNetworkAnalysis(ipAddress: string, enabled = true) {
     enabled: enabled && !!ipAddress,
     staleTime: 10 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
-    retry: 2,
+    retry: 2
   });
 }
 
@@ -105,7 +96,7 @@ export function useIPComparison(ip1: string, ip2: string, enabled = true) {
     enabled: enabled && !!ip1 && !!ip2,
     staleTime: 15 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
-    retry: 1,
+    retry: 1
   });
 }
 
@@ -116,7 +107,7 @@ export function useNetworkFingerprint() {
     queryFn: IPProbeAPI.getNetworkFingerprint,
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 10 * 60 * 1000,
-    retry: 3,
+    retry: 3
   });
 }
 
@@ -128,7 +119,7 @@ export function useDNSAnalysis(ipAddress: string, enabled = true) {
     enabled: enabled && !!ipAddress,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
-    retry: 2,
+    retry: 2
   });
 }
 
@@ -140,31 +131,31 @@ export function useSecurityAssessment(ipAddress: string, enabled = true) {
     enabled: enabled && !!ipAddress,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
-    retry: 2,
+    retry: 2
   });
 }
 
 // Mutation hook for refreshing current IP analysis
 export function useRefreshCurrentIP() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: IPProbeAPI.getCurrentIP,
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.setQueryData(queryKeys.currentIP, data);
       // Also invalidate related queries
       queryClient.invalidateQueries({ queryKey: queryKeys.detailedAnalysis });
     },
     onError: (error: APIError) => {
       console.error('Failed to refresh current IP:', error);
-    },
+    }
   });
 }
 
 // Mutation hook for analyzing new IP
 export function useAnalyzeIP() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (ipAddress: string) => IPProbeAPI.analyzeSpecificIP(ipAddress),
     onSuccess: (data, ipAddress) => {
@@ -172,45 +163,45 @@ export function useAnalyzeIP() {
     },
     onError: (error: APIError) => {
       console.error('Failed to analyze IP:', error);
-    },
+    }
   });
 }
 
 // Utility hook for invalidating all IP-related queries
 export function useInvalidateIPQueries() {
   const queryClient = useQueryClient();
-  
+
   return () => {
     queryClient.invalidateQueries({ queryKey: ['ip'] });
   };
 }
 
 // Hook for prefetching related data
-export function usePrefetchRelatedData(ipAddress?: string) {
+export function usePrefetchRelatedData() {
   const queryClient = useQueryClient();
-  
+
   const prefetchRelatedData = async (ip: string) => {
     // Prefetch DNS analysis
     queryClient.prefetchQuery({
       queryKey: queryKeys.dnsAnalysis(ip),
       queryFn: () => IPProbeAPI.getDNSAnalysis(ip),
-      staleTime: 5 * 60 * 1000,
+      staleTime: 5 * 60 * 1000
     });
-    
+
     // Prefetch security assessment
     queryClient.prefetchQuery({
       queryKey: queryKeys.securityAssessment(ip),
       queryFn: () => IPProbeAPI.getSecurityAssessment(ip),
-      staleTime: 5 * 60 * 1000,
+      staleTime: 5 * 60 * 1000
     });
-    
+
     // Prefetch network analysis
     queryClient.prefetchQuery({
       queryKey: queryKeys.networkAnalysis(ip),
       queryFn: () => IPProbeAPI.getNetworkAnalysis(ip),
-      staleTime: 10 * 60 * 1000,
+      staleTime: 10 * 60 * 1000
     });
   };
-  
+
   return prefetchRelatedData;
 }
