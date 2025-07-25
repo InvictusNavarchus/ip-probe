@@ -1,13 +1,24 @@
-import { Shield, TrendingUp, AlertTriangle } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
-import { Badge, RiskBadge } from './ui/Badge';
-import { LoadingSpinner } from './LoadingSpinner';
+import { AlertTriangle, Shield, TrendingUp } from 'lucide-react';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts';
 import { useSecurityAssessment } from '../hooks/useIPAnalysis';
+import { LoadingSpinner } from './LoadingSpinner';
+import { Badge, RiskBadge } from './ui/Badge';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 
 interface SecurityChartProps {
-  ipAddress?: string;
-  className?: string;
+  ipAddress?: string | undefined;
+  className?: string | undefined;
 }
 
 export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
@@ -47,9 +58,7 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
         <CardContent>
           <div className="flex items-center justify-center py-8">
             <LoadingSpinner size="lg" />
-            <span className="ml-3 text-slate-600 dark:text-slate-400">
-              Analyzing security...
-            </span>
+            <span className="ml-3 text-slate-600 dark:text-slate-400">Analyzing security...</span>
           </div>
         </CardContent>
       </Card>
@@ -87,14 +96,14 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
     { name: 'Network', score: assessment.categories.network.score, color: '#3b82f6' },
     { name: 'DNS', score: assessment.categories.dns.score, color: '#10b981' },
     { name: 'Reputation', score: assessment.categories.reputation.score, color: '#f59e0b' },
-    { name: 'Privacy', score: assessment.categories.privacy.score, color: '#8b5cf6' },
+    { name: 'Privacy', score: assessment.categories.privacy.score, color: '#8b5cf6' }
   ];
 
   const issuesData = [
     { name: 'Critical', count: assessment.summary.criticalIssues, color: '#ef4444' },
     { name: 'High', count: assessment.summary.highIssues, color: '#f97316' },
     { name: 'Medium', count: assessment.summary.mediumIssues, color: '#eab308' },
-    { name: 'Low', count: assessment.summary.lowIssues, color: '#22c55e' },
+    { name: 'Low', count: assessment.summary.lowIssues, color: '#22c55e' }
   ].filter(item => item.count > 0);
 
   const RADIAN = Math.PI / 180;
@@ -104,11 +113,11 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
     return (
-      <text 
-        x={x} 
-        y={y} 
-        fill="white" 
-        textAnchor={x > cx ? 'start' : 'end'} 
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
         fontSize={12}
         fontWeight="bold"
@@ -129,7 +138,7 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
           <RiskBadge riskScore={assessment.overallRiskScore} />
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <div className="space-y-6">
           {/* Overall Risk Score */}
@@ -137,9 +146,7 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
             <div className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
               {assessment.overallRiskScore}/100
             </div>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Overall Risk Score
-            </p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Overall Risk Score</p>
           </div>
 
           {/* Category Scores Chart */}
@@ -148,21 +155,14 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
               <TrendingUp className="w-4 h-4 mr-2" />
               Category Scores
             </h3>
-            
+
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={riskData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis 
-                    dataKey="name" 
-                    tick={{ fontSize: 12 }}
-                    className="text-slate-600 dark:text-slate-400"
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 12 }}
-                    className="text-slate-600 dark:text-slate-400"
-                  />
-                  <Tooltip 
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} className="text-slate-600 dark:text-slate-400" />
+                  <YAxis tick={{ fontSize: 12 }} className="text-slate-600 dark:text-slate-400" />
+                  <Tooltip
                     contentStyle={{
                       backgroundColor: 'rgb(30 41 59)',
                       border: '1px solid rgb(71 85 105)',
@@ -179,10 +179,8 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
           {/* Issues Distribution */}
           {issuesData.length > 0 && (
             <div>
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">
-                Issues Distribution
-              </h3>
-              
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Issues Distribution</h3>
+
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -200,7 +198,7 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{
                         backgroundColor: 'rgb(30 41 59)',
                         border: '1px solid rgb(71 85 105)',
@@ -211,14 +209,11 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              
+
               <div className="flex flex-wrap gap-2 mt-3">
-                {issuesData.map((item) => (
+                {issuesData.map(item => (
                   <Badge key={item.name} variant="secondary" className="text-xs">
-                    <span 
-                      className="w-2 h-2 rounded-full mr-1.5" 
-                      style={{ backgroundColor: item.color }}
-                    />
+                    <span className="w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: item.color }} />
                     {item.name}: {item.count}
                   </Badge>
                 ))}
@@ -228,22 +223,18 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
 
           {/* Category Details */}
           <div>
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">
-              Category Details
-            </h3>
-            
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Category Details</h3>
+
             <div className="space-y-3">
               {Object.entries(assessment.categories).map(([category, data]) => (
                 <div key={category} className="border border-slate-200 dark:border-slate-700 rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-slate-900 dark:text-slate-100 capitalize">
-                      {category}
-                    </span>
+                    <span className="font-medium text-slate-900 dark:text-slate-100 capitalize">{category}</span>
                     <Badge variant={data.score >= 80 ? 'success' : data.score >= 60 ? 'warning' : 'danger'}>
                       {data.score}/100
                     </Badge>
                   </div>
-                  
+
                   {data.issues.length > 0 && (
                     <div className="text-sm text-slate-600 dark:text-slate-400">
                       <p className="font-medium mb-1">Issues:</p>
@@ -252,9 +243,7 @@ export function SecurityChart({ ipAddress, className }: SecurityChartProps) {
                           <li key={index}>{issue}</li>
                         ))}
                         {data.issues.length > 3 && (
-                          <li className="text-slate-500">
-                            +{data.issues.length - 3} more issues
-                          </li>
+                          <li className="text-slate-500">+{data.issues.length - 3} more issues</li>
                         )}
                       </ul>
                     </div>

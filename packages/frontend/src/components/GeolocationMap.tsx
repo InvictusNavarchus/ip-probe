@@ -1,12 +1,12 @@
-import { useEffect, useRef } from 'react';
-import { MapPin, Globe, AlertTriangle } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Icon, LatLngTuple } from 'leaflet';
-import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
-import { Badge } from './ui/Badge';
-import { LoadingSpinner } from './LoadingSpinner';
-import { useCurrentIP } from '../hooks/useIPAnalysis';
 import 'leaflet/dist/leaflet.css';
+import { AlertTriangle, Globe, MapPin } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import { useCurrentIP } from '../hooks/useIPAnalysis';
+import { LoadingSpinner } from './LoadingSpinner';
+import { Badge } from './ui/Badge';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 
 // Fix for default markers in React Leaflet
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -27,16 +27,16 @@ const defaultIcon = new Icon({
 // Component to update map view when coordinates change
 function MapUpdater({ center, zoom }: { center: LatLngTuple; zoom: number }) {
   const map = useMap();
-  
+
   useEffect(() => {
     map.setView(center, zoom);
   }, [map, center, zoom]);
-  
+
   return null;
 }
 
 interface GeolocationMapProps {
-  className?: string;
+  className?: string | undefined;
   height?: string;
 }
 
@@ -56,9 +56,7 @@ export function GeolocationMap({ className, height = '400px' }: GeolocationMapPr
         <CardContent>
           <div className="flex items-center justify-center py-8" style={{ height }}>
             <LoadingSpinner size="lg" />
-            <span className="ml-3 text-slate-600 dark:text-slate-400">
-              Loading location data...
-            </span>
+            <span className="ml-3 text-slate-600 dark:text-slate-400">Loading location data...</span>
           </div>
         </CardContent>
       </Card>
@@ -130,7 +128,7 @@ export function GeolocationMap({ className, height = '400px' }: GeolocationMapPr
           )}
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <div className="space-y-4">
           {/* Location Summary */}
@@ -142,33 +140,27 @@ export function GeolocationMap({ className, height = '400px' }: GeolocationMapPr
                   <p className="font-medium text-slate-900 dark:text-slate-100">
                     {geolocation.country}
                     {geolocation.countryCode && (
-                      <span className="ml-2 text-sm text-slate-500">
-                        ({geolocation.countryCode})
-                      </span>
+                      <span className="ml-2 text-sm text-slate-500">({geolocation.countryCode})</span>
                     )}
                   </p>
                 </div>
               )}
-              
+
               {geolocation.region && (
                 <div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Region</p>
-                  <p className="font-medium text-slate-900 dark:text-slate-100">
-                    {geolocation.region}
-                  </p>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">{geolocation.region}</p>
                 </div>
               )}
-              
+
               {geolocation.city && (
                 <div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">City</p>
-                  <p className="font-medium text-slate-900 dark:text-slate-100">
-                    {geolocation.city}
-                  </p>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">{geolocation.city}</p>
                 </div>
               )}
             </div>
-            
+
             <div className="mt-3">
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Coordinates</p>
               <p className="font-mono text-sm text-slate-900 dark:text-slate-100">
@@ -179,52 +171,44 @@ export function GeolocationMap({ className, height = '400px' }: GeolocationMapPr
 
           {/* Map */}
           <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
-            <MapContainer
-              ref={mapRef}
-              center={center}
-              zoom={zoom}
-              style={{ height, width: '100%' }}
-              className="z-0"
-            >
+            <MapContainer ref={mapRef} center={center} zoom={zoom} style={{ height, width: '100%' }} className="z-0">
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              
+
               <MapUpdater center={center} zoom={zoom} />
-              
+
               <Marker position={center} icon={defaultIcon}>
                 <Popup>
                   <div className="p-2">
-                    <div className="font-semibold text-slate-900 mb-2">
-                      {primaryIP?.address}
-                    </div>
-                    
+                    <div className="font-semibold text-slate-900 mb-2">{primaryIP?.address}</div>
+
                     <div className="space-y-1 text-sm">
                       {geolocation.city && (
                         <div>
                           <span className="font-medium">City:</span> {geolocation.city}
                         </div>
                       )}
-                      
+
                       {geolocation.region && (
                         <div>
                           <span className="font-medium">Region:</span> {geolocation.region}
                         </div>
                       )}
-                      
+
                       {geolocation.country && (
                         <div>
                           <span className="font-medium">Country:</span> {geolocation.country}
                         </div>
                       )}
-                      
+
                       {geolocation.timezone && (
                         <div>
                           <span className="font-medium">Timezone:</span> {geolocation.timezone}
                         </div>
                       )}
-                      
+
                       <div className="pt-2 border-t border-slate-200">
                         <div className="font-mono text-xs text-slate-600">
                           {geolocation.latitude.toFixed(6)}, {geolocation.longitude.toFixed(6)}
@@ -243,12 +227,8 @@ export function GeolocationMap({ className, height = '400px' }: GeolocationMapPr
               <MapPin className="w-4 h-4 mr-1" />
               Accuracy: {geolocation.accuracy || 'Unknown'}
             </div>
-            
-            {geolocation.source && (
-              <div>
-                Source: {geolocation.source}
-              </div>
-            )}
+
+            {geolocation.source && <div>Source: {geolocation.source}</div>}
           </div>
         </div>
       </CardContent>

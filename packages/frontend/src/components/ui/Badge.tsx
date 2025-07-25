@@ -4,7 +4,7 @@ interface BadgeProps {
   children: React.ReactNode;
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'secondary';
   size?: 'sm' | 'md' | 'lg';
-  className?: string;
+  className?: string | undefined;
 }
 
 export function Badge({ children, variant = 'default', size = 'md', className }: BadgeProps) {
@@ -14,13 +14,13 @@ export function Badge({ children, variant = 'default', size = 'md', className }:
     warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
     danger: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
     info: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    secondary: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
+    secondary: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400'
   };
 
   const sizeClasses = {
     sm: 'px-2 py-0.5 text-xs',
     md: 'px-2.5 py-1 text-sm',
-    lg: 'px-3 py-1.5 text-base',
+    lg: 'px-3 py-1.5 text-base'
   };
 
   return (
@@ -41,7 +41,7 @@ interface StatusBadgeProps {
   status: 'online' | 'offline' | 'warning' | 'error';
   children?: React.ReactNode;
   showDot?: boolean;
-  className?: string;
+  className?: string | undefined;
 }
 
 export function StatusBadge({ status, children, showDot = true, className }: StatusBadgeProps) {
@@ -49,32 +49,30 @@ export function StatusBadge({ status, children, showDot = true, className }: Sta
     online: {
       variant: 'success' as const,
       dotColor: 'bg-green-500',
-      label: 'Online',
+      label: 'Online'
     },
     offline: {
       variant: 'secondary' as const,
       dotColor: 'bg-slate-500',
-      label: 'Offline',
+      label: 'Offline'
     },
     warning: {
       variant: 'warning' as const,
       dotColor: 'bg-yellow-500',
-      label: 'Warning',
+      label: 'Warning'
     },
     error: {
       variant: 'danger' as const,
       dotColor: 'bg-red-500',
-      label: 'Error',
-    },
+      label: 'Error'
+    }
   };
 
   const config = statusConfig[status];
 
   return (
     <Badge variant={config.variant} className={className}>
-      {showDot && (
-        <span className={cn('w-2 h-2 rounded-full mr-1.5', config.dotColor)} />
-      )}
+      {showDot && <span className={cn('w-2 h-2 rounded-full mr-1.5', config.dotColor)} />}
       {children || config.label}
     </Badge>
   );
@@ -82,7 +80,7 @@ export function StatusBadge({ status, children, showDot = true, className }: Sta
 
 interface RiskBadgeProps {
   riskScore: number;
-  className?: string;
+  className?: string | undefined;
 }
 
 export function RiskBadge({ riskScore, className }: RiskBadgeProps) {
@@ -105,7 +103,7 @@ export function RiskBadge({ riskScore, className }: RiskBadgeProps) {
 
 interface ConfidenceBadgeProps {
   confidence: number;
-  className?: string;
+  className?: string | undefined;
 }
 
 export function ConfidenceBadge({ confidence, className }: ConfidenceBadgeProps) {

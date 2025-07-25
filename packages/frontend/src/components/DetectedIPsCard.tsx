@@ -1,12 +1,12 @@
-import { Eye, Network, AlertTriangle } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
-import { Badge, ConfidenceBadge } from './ui/Badge';
-import { LoadingSpinner } from './LoadingSpinner';
+import { AlertTriangle, Eye, Network } from 'lucide-react';
 import { useDetailedAnalysis } from '../hooks/useIPAnalysis';
 import type { IPAddress } from '../types/api';
+import { LoadingSpinner } from './LoadingSpinner';
+import { Badge, ConfidenceBadge } from './ui/Badge';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 
 interface DetectedIPsCardProps {
-  className?: string;
+  className?: string | undefined;
 }
 
 export function DetectedIPsCard({ className }: DetectedIPsCardProps) {
@@ -21,9 +21,7 @@ export function DetectedIPsCard({ className }: DetectedIPsCardProps) {
         <CardContent>
           <div className="flex items-center justify-center py-8">
             <LoadingSpinner size="lg" />
-            <span className="ml-3 text-slate-600 dark:text-slate-400">
-              Analyzing all detected IPs...
-            </span>
+            <span className="ml-3 text-slate-600 dark:text-slate-400">Analyzing all detected IPs...</span>
           </div>
         </CardContent>
       </Card>
@@ -110,42 +108,34 @@ export function DetectedIPsCard({ className }: DetectedIPsCardProps) {
             <Eye className="w-5 h-5 mr-2" />
             Detected IP Addresses
           </CardTitle>
-          <Badge variant="info">
-            {analysis.metadata.totalIPsDetected} found
-          </Badge>
+          <Badge variant="info">{analysis.metadata.totalIPsDetected} found</Badge>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <div className="space-y-4">
           {/* Summary Statistics */}
           <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4">
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">
-              Detection Summary
-            </h3>
-            
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Detection Summary</h3>
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {analysis.metadata.publicIPs}
-                </p>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">{analysis.metadata.publicIPs}</p>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Public IPs</p>
               </div>
-              
+
               <div className="text-center">
-                <p className="text-2xl font-bold text-slate-600 dark:text-slate-400">
-                  {analysis.metadata.privateIPs}
-                </p>
+                <p className="text-2xl font-bold text-slate-600 dark:text-slate-400">{analysis.metadata.privateIPs}</p>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Private IPs</p>
               </div>
-              
+
               <div className="text-center">
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {analysis.metadata.highestConfidence}%
                 </p>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Highest Confidence</p>
               </div>
-              
+
               <div className="text-center">
                 <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {analysis.metadata.sources.length}
@@ -153,11 +143,11 @@ export function DetectedIPsCard({ className }: DetectedIPsCardProps) {
                 <p className="text-sm text-slate-600 dark:text-slate-400">Sources</p>
               </div>
             </div>
-            
+
             <div className="mt-4">
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">Detection Sources:</p>
               <div className="flex flex-wrap gap-2">
-                {analysis.metadata.sources.map((source) => (
+                {analysis.metadata.sources.map(source => (
                   <Badge key={source} variant="secondary" size="sm">
                     {getSourceLabel(source as IPAddress['source'])}
                   </Badge>
@@ -168,10 +158,8 @@ export function DetectedIPsCard({ className }: DetectedIPsCardProps) {
 
           {/* IP Address List */}
           <div>
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">
-              All Detected Addresses
-            </h3>
-            
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">All Detected Addresses</h3>
+
             <div className="space-y-3">
               {analysis.ip.allDetectedIPs.map((ip, index) => (
                 <div
@@ -188,12 +176,14 @@ export function DetectedIPsCard({ className }: DetectedIPsCardProps) {
                         {ip.address}
                       </span>
                       {ip.address === analysis.ip.primaryIP?.address && (
-                        <Badge variant="success" size="sm">Primary</Badge>
+                        <Badge variant="success" size="sm">
+                          Primary
+                        </Badge>
                       )}
                     </div>
                     <ConfidenceBadge confidence={ip.confidence} />
                   </div>
-                  
+
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-2">
                       <Badge variant={getTypeVariant(ip.type)}>
@@ -204,7 +194,7 @@ export function DetectedIPsCard({ className }: DetectedIPsCardProps) {
                       </Badge>
                     </div>
                   </div>
-                  
+
                   {/* Additional details if available */}
                   {(ip as any).details && (
                     <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600">
@@ -217,7 +207,7 @@ export function DetectedIPsCard({ className }: DetectedIPsCardProps) {
                             </span>
                           </div>
                         )}
-                        
+
                         {(ip as any).details.cidr && (
                           <div>
                             <span className="text-slate-600 dark:text-slate-400">CIDR: </span>
@@ -226,7 +216,7 @@ export function DetectedIPsCard({ className }: DetectedIPsCardProps) {
                             </span>
                           </div>
                         )}
-                        
+
                         {(ip as any).details.range && (
                           <div className="md:col-span-2">
                             <span className="text-slate-600 dark:text-slate-400">Range: </span>

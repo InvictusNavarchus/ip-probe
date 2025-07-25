@@ -1,20 +1,20 @@
-import { useState } from 'react';
-import { Dns, Shield, Clock, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
-import { Badge, StatusBadge, RiskBadge } from './ui/Badge';
-import { Button } from './ui/Button';
-import { LoadingSpinner } from './LoadingSpinner';
-import { useDNSAnalysis } from '../hooks/useIPAnalysis';
 import { formatDistanceToNow } from 'date-fns';
+import { AlertTriangle, CheckCircle, Clock, Globe, Shield, XCircle } from 'lucide-react';
+import { useState } from 'react';
+import { useDNSAnalysis } from '../hooks/useIPAnalysis';
 import type { DNSRecord } from '../types/api';
+import { LoadingSpinner } from './LoadingSpinner';
+import { Badge, RiskBadge, StatusBadge } from './ui/Badge';
+import { Button } from './ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 
 interface DNSAnalysisCardProps {
-  ipAddress?: string;
-  className?: string;
+  ipAddress?: string | undefined;
+  className?: string | undefined;
 }
 
 export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) {
-  const [selectedIP, setSelectedIP] = useState(ipAddress || '');
+  const [selectedIP] = useState(ipAddress || '');
   const { data: dnsAnalysis, isLoading, error, refetch } = useDNSAnalysis(selectedIP, !!selectedIP);
 
   const handleAnalyze = () => {
@@ -28,13 +28,13 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Dns className="w-5 h-5 mr-2" />
+            <Globe className="w-5 h-5 mr-2" />
             DNS Analysis
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <Dns className="w-12 h-12 mx-auto mb-2 text-slate-400" />
+            <Globe className="w-12 h-12 mx-auto mb-2 text-slate-400" />
             <p className="font-medium text-slate-600 dark:text-slate-400">No IP Selected</p>
             <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">
               Select an IP address to perform DNS analysis
@@ -50,16 +50,14 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Dns className="w-5 h-5 mr-2" />
+            <Globe className="w-5 h-5 mr-2" />
             DNS Analysis
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
             <LoadingSpinner size="lg" />
-            <span className="ml-3 text-slate-600 dark:text-slate-400">
-              Analyzing DNS records...
-            </span>
+            <span className="ml-3 text-slate-600 dark:text-slate-400">Analyzing DNS records...</span>
           </div>
         </CardContent>
       </Card>
@@ -71,7 +69,7 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Dns className="w-5 h-5 mr-2" />
+            <Globe className="w-5 h-5 mr-2" />
             DNS Analysis
           </CardTitle>
         </CardHeader>
@@ -123,7 +121,7 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center">
-            <Dns className="w-5 h-5 mr-2" />
+            <Globe className="w-5 h-5 mr-2" />
             DNS Analysis
           </CardTitle>
           <div className="flex items-center space-x-2">
@@ -136,7 +134,7 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <div className="space-y-6">
           {/* Target IP */}
@@ -150,7 +148,11 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
               </div>
               <div className="text-right">
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Response Time</p>
-                <Badge variant={dnsAnalysis.responseTime < 100 ? 'success' : dnsAnalysis.responseTime < 500 ? 'warning' : 'danger'}>
+                <Badge
+                  variant={
+                    dnsAnalysis.responseTime < 100 ? 'success' : dnsAnalysis.responseTime < 500 ? 'warning' : 'danger'
+                  }
+                >
                   {dnsAnalysis.responseTime}ms
                 </Badge>
               </div>
@@ -164,7 +166,7 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
                 <Shield className="w-4 h-4 mr-2" />
                 Reverse DNS Lookup
               </h3>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-600 dark:text-slate-400">Hostname</span>
@@ -172,23 +174,17 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
                     {dnsAnalysis.reverseDNS.hostname || 'Not found'}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-600 dark:text-slate-400">Verified</span>
-                  <StatusBadge 
-                    status={dnsAnalysis.reverseDNS.verified ? 'online' : 'error'}
-                    showDot={false}
-                  >
+                  <StatusBadge status={dnsAnalysis.reverseDNS.verified ? 'online' : 'error'} showDot={false}>
                     {dnsAnalysis.reverseDNS.verified ? 'Yes' : 'No'}
                   </StatusBadge>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-600 dark:text-slate-400">Forward Match</span>
-                  <StatusBadge 
-                    status={dnsAnalysis.reverseDNS.forwardMatch ? 'online' : 'warning'}
-                    showDot={false}
-                  >
+                  <StatusBadge status={dnsAnalysis.reverseDNS.forwardMatch ? 'online' : 'warning'} showDot={false}>
                     {dnsAnalysis.reverseDNS.forwardMatch ? 'Yes' : 'No'}
                   </StatusBadge>
                 </div>
@@ -202,10 +198,10 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
               <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">
                 DNS Records ({dnsAnalysis.dnsRecords.length})
               </h3>
-              
+
               <div className="space-y-2">
                 {dnsAnalysis.dnsRecords.map((record, index) => (
-                  <div 
+                  <div
                     key={index}
                     className="flex items-center justify-between p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg"
                   >
@@ -213,11 +209,9 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
                       <Badge variant={getRecordTypeColor(record.type)} size="sm">
                         {record.type}
                       </Badge>
-                      <span className="font-mono text-sm text-slate-900 dark:text-slate-100">
-                        {record.value}
-                      </span>
+                      <span className="font-mono text-sm text-slate-900 dark:text-slate-100">{record.value}</span>
                     </div>
-                    
+
                     {record.ttl && (
                       <div className="flex items-center text-xs text-slate-500 dark:text-slate-400">
                         <Clock className="w-3 h-3 mr-1" />
@@ -233,10 +227,8 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
           {/* DNS Servers */}
           {dnsAnalysis.dnsServers && dnsAnalysis.dnsServers.length > 0 && (
             <div>
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">
-                DNS Servers
-              </h3>
-              
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">DNS Servers</h3>
+
               <div className="flex flex-wrap gap-2">
                 {dnsAnalysis.dnsServers.map((server, index) => (
                   <Badge key={index} variant="secondary">
@@ -253,28 +245,30 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
               <Shield className="w-4 h-4 mr-2" />
               DNS Leak Detection
             </h3>
-            
+
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-600 dark:text-slate-400">Leaks Detected</span>
-                <StatusBadge 
-                  status={dnsAnalysis.dnsLeaks.detected ? 'error' : 'online'}
-                  showDot={false}
-                >
+                <StatusBadge status={dnsAnalysis.dnsLeaks.detected ? 'error' : 'online'} showDot={false}>
                   {dnsAnalysis.dnsLeaks.detected ? 'Yes' : 'No'}
                 </StatusBadge>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-600 dark:text-slate-400">Risk Level</span>
-                <Badge variant={
-                  dnsAnalysis.dnsLeaks.riskLevel === 'high' ? 'danger' :
-                  dnsAnalysis.dnsLeaks.riskLevel === 'medium' ? 'warning' : 'success'
-                }>
+                <Badge
+                  variant={
+                    dnsAnalysis.dnsLeaks.riskLevel === 'high'
+                      ? 'danger'
+                      : dnsAnalysis.dnsLeaks.riskLevel === 'medium'
+                        ? 'warning'
+                        : 'success'
+                  }
+                >
                   {dnsAnalysis.dnsLeaks.riskLevel}
                 </Badge>
               </div>
-              
+
               {dnsAnalysis.dnsLeaks.leakedServers.length > 0 && (
                 <div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">Leaked Servers:</p>
@@ -296,13 +290,13 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
               <Shield className="w-4 h-4 mr-2" />
               Reputation Analysis
             </h3>
-            
+
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-600 dark:text-slate-400">Risk Score</span>
                 <RiskBadge riskScore={dnsAnalysis.reputation.riskScore} />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-slate-600 dark:text-slate-400">Malicious</span>
@@ -312,7 +306,7 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
                     <CheckCircle className="w-4 h-4 text-green-500" />
                   )}
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-slate-600 dark:text-slate-400">Phishing</span>
                   {dnsAnalysis.reputation.isPhishing ? (
@@ -321,7 +315,7 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
                     <CheckCircle className="w-4 h-4 text-green-500" />
                   )}
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-slate-600 dark:text-slate-400">Malware</span>
                   {dnsAnalysis.reputation.isMalware ? (
@@ -330,7 +324,7 @@ export function DNSAnalysisCard({ ipAddress, className }: DNSAnalysisCardProps) 
                     <CheckCircle className="w-4 h-4 text-green-500" />
                   )}
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-slate-600 dark:text-slate-400">Spam</span>
                   {dnsAnalysis.reputation.isSpam ? (

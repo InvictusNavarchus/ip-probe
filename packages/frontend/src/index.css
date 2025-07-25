@@ -113,48 +113,7 @@
   }
 }
 
-/* Component Styles */
-@layer components {
-  .card {
-    @apply bg-white dark:bg-slate-800 rounded-lg shadow-sm border;
-    @apply border-slate-200 dark:border-slate-700;
-    @apply transition-all duration-200;
-  }
-
-  .card-hover {
-    @apply card hover:shadow-md hover:shadow-slate-200/50;
-    @apply dark:hover:shadow-slate-900/50;
-  }
-
-  .input {
-    @apply block w-full px-3 py-2 text-sm rounded-md border;
-    @apply border-slate-300 dark:border-slate-600;
-    @apply bg-white dark:bg-slate-800;
-    @apply text-slate-900 dark:text-slate-100;
-    @apply placeholder-slate-500 dark:placeholder-slate-400;
-    @apply focus:ring-2 focus:ring-brand-500 focus:border-brand-500;
-    @apply transition-colors duration-200;
-  }
-
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
-
-  .badge-success {
-    @apply badge bg-success-100 text-success-800;
-    @apply dark:bg-success-900/20 dark:text-success-400;
-  }
-
-  .badge-warning {
-    @apply badge bg-warning-100 text-warning-800;
-    @apply dark:bg-warning-900/20 dark:text-warning-400;
-  }
-
-  .badge-error {
-    @apply badge bg-error-100 text-error-800;
-    @apply dark:bg-error-900/20 dark:text-error-400;
-  }
-}
+/* Component Styles - Using standard CSS for Tailwind CSS 4 compatibility */
 
 /* Utility Classes */
 @layer utilities {
