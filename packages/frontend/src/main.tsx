@@ -46,7 +46,6 @@ root.render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   </StrictMode>
 );

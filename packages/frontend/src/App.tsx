@@ -9,14 +9,12 @@ function App(): React.JSX.Element {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
-          <Suspense fallback={<LoadingSpinner />}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="*" element={<div>404 - Page Not Found</div>} />
-            </Routes>
-          </Suspense>
-        </div>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="*" element={<div>404 - Page Not Found</div>} />
+          </Routes>
+        </Suspense>
       </ThemeProvider>
     </ErrorBoundary>
   );
