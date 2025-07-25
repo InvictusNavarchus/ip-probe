@@ -23,13 +23,13 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "jsx": "react"
+    "jsx": "react",
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitAny": false,
+    "declaration": false,
+    "declarationMap": false
   },
-  "include": [
-    "src/**/*",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ],
+  "include": ["src/**/*", "**/*.test.ts", "**/*.spec.ts"],
   "exclude": [
     "node_modules",
     "dist",
